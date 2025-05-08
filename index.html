@@ -88,11 +88,11 @@
                 const pdfDoc = await PDFDocument.load(pdfBytes);
                 const page = pdfDoc.getPages()[0];
                 
-                // "Your Name" টেক্সটের সঠিক পজিশনে নতুন নাম বসানো
+                // নামের জন্য সঠিক পজিশন (একটু উপরে তুলতে yPos মান বাড়ানো হয়েছে)
                 const fontSize = 28;
                 const textWidth = userName.length * (fontSize * 0.6);
                 const xPos = (page.getWidth() / 2) - (textWidth / 2);
-                const yPos = 396; // "Your Name" এর সঠিক Y পজিশন (396pt)
+                const yPos = 410; // মূল মান 396 ছিল, এখন 410 করা হয়েছে (14 পয়েন্ট উপরে)
                 
                 // PDF এ নাম যোগ করুন
                 page.drawText(userName.toUpperCase(), {
