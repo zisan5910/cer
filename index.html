@@ -87,18 +87,18 @@
                 const { PDFDocument, rgb } = PDFLib;
                 const pdfDoc = await PDFDocument.load(pdfBytes);
                 const page = pdfDoc.getPages()[0];
-                const { width, height } = page.getSize();
                 
-                // নামের জন্য সঠিক পজিশন (mm থেকে pt এ রূপান্তর)
-                const mmToPt = 2.83465; // 1mm = 2.83465 points
-                const xPos = (width / 2) - ((userName.length * 8) / 2); // আনুমানিক কেন্দ্রীকরণ
-                const yPos = height - (121.07 * mmToPt); // 121.07mm নিচ থেকে
+                // "Your Name" টেক্সটের সঠিক পজিশনে নতুন নাম বসানো
+                const fontSize = 28;
+                const textWidth = userName.length * (fontSize * 0.6);
+                const xPos = (page.getWidth() / 2) - (textWidth / 2);
+                const yPos = 396; // "Your Name" এর সঠিক Y পজিশন (396pt)
                 
                 // PDF এ নাম যোগ করুন
                 page.drawText(userName.toUpperCase(), {
                     x: xPos,
                     y: yPos,
-                    size: 28,
+                    size: fontSize,
                     color: rgb(0, 0, 0),
                     font: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold),
                 });
