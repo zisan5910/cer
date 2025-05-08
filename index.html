@@ -67,58 +67,60 @@
     </div>
 
     <script>
-        async function generateCertificate() {
-            const userName = document.getElementById('userName').value.trim();
-            const button = document.getElementById('generateBtn');
-            const preview = document.getElementById('preview');
-            
-            if (!userName) {
-                alert('দয়া করে আপনার নাম লিখুন');
-                return;
-            }
-            
-            button.disabled = true;
-            button.textContent = 'তৈরি হচ্ছে...';
-            preview.style.display = 'block';
-            
-            try {
-                // টেমপ্লেট PDF লোড করুন (আপনার PDF URL দিতে হবে)
-                const pdfBytes = await fetch('certificate.pdf').then(res => res.arrayBuffer());
-                const { PDFDocument, rgb } = PDFLib;
-                const pdfDoc = await PDFDocument.load(pdfBytes);
-                const page = pdfDoc.getPages()[0];
-                const { width, height } = page.getSize();
-                
-                // নামের জন্য সঠিক পজিশন (আপনার PDF অনুযায়ী এডজাস্ট করুন)
-                const textWidth = userName.length * 12; // আনুমানিক টেক্সট প্রস্থ
-                const xPos = width / 2 - (textWidth / 2);
-                const yPos = height / 2 + 120; // উল্লম্ব পজিশন
-                
-                // PDF এ নাম যোগ করুন
-                page.drawText(userName.toUpperCase(), {
-                    x: xPos,
-                    y: yPos,
-                    size: 28,
-                    color: rgb(0, 0, 0),
-                });
-                
-                // PDF জেনারেট ও ডাউনলোড
-                const newPdfBytes = await pdfDoc.save();
-                const blob = new Blob([newPdfBytes], { type: 'application/pdf' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `${userName}_Blood_Donation_Certificate.pdf`;
-                link.click();
-                
-            } catch (error) {
-                console.error('ত্রুটি:', error);
-                alert('সার্টিফিকেট তৈরি করতে সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।');
-            } finally {
-                button.disabled = false;
-                button.textContent = 'সার্টিফিকেট ডাউনলোড করুন';
-                preview.style.display = 'none';
-            }
+    async function generateCertificate() {
+        const userName = document.getElementById('userName').value.trim();
+        const button = document.getElementById('generateBtn');
+        const preview = document.getElementById('preview');
+        
+        if (!userName) {
+            alert('দয়া করে আপনার নাম লিখুন');
+            return;
         }
-    </script>
+        
+        button.disabled = true;
+        button.textContent = 'তৈরি হচ্ছে...';
+        preview.style.display = 'block';
+        
+        try {
+            // টেমপ্লেট PDF লোড করুন
+            const pdfBytes = await fetch('Certificate.pdf').then(res => res.arrayBuffer());
+            const { PDFDocument, rgb } = PDFLib;
+            const pdfDoc = await PDFDocument.load(pdfBytes);
+            const page = pdfDoc.getPages()[0];
+            const { width, height } = page.getSize();
+            
+            // নামের জন্য সঠিক পজিশন (আপডেট করা)
+            const fontSize = 28;
+            const textWidth = userName.length * (fontSize * 0.6); // আরো সঠিক টেক্সট প্রস্থ গণনা
+            const xPos = (width - textWidth) / 2; // অনুভূমিক কেন্দ্রীকরণ
+            const yPos = height / 2 + 100; // উল্লম্ব পজিশন (আপনার PDF অনুযায়ী এডজাস্ট করুন)
+            
+            // PDF এ নাম যোগ করুন
+            page.drawText(userName.toUpperCase(), {
+                x: xPos,
+                y: yPos,
+                size: fontSize,
+                color: rgb(0, 0, 0),
+                font: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold),
+            });
+            
+            // PDF জেনারেট ও ডাউনলোড
+            const newPdfBytes = await pdfDoc.save();
+            const blob = new Blob([newPdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${userName}_Blood_Donation_Certificate.pdf`;
+            link.click();
+            
+        } catch (error) {
+            console.error('ত্রুটি:', error);
+            alert('সার্টিফিকেট তৈরি করতে সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।');
+        } finally {
+            button.disabled = false;
+            button.textContent = 'সার্টিফিকেট ডাউনলোড করুন';
+            preview.style.display = 'none';
+        }
+    }
+</script>
 </body>
 </html>
